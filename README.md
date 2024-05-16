@@ -16,9 +16,7 @@ Fury is an external cheat for Counter-Strike 2, developed using [PyMeow](https:/
 
 ## Demonstration
 
-![img1](https://telegra.ph/file/69e2347f70f02bd5218cf.png)
-
-![img2](https://telegra.ph/file/9d48410347e5e69f1eb28.png)
+![img](https://telegra.ph/file/9d48410347e5e69f1eb28.png)
 
 ## Usage
 
