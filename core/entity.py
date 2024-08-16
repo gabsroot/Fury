@@ -30,7 +30,7 @@ class Entity:
 
     def Bone(self, index):
         scene = pm.r_int64(self.process, self.entityPawn + Offsets.m_pGameSceneNode)
-        bone = pm.r_int64(self.process, scene + 480)
+        bone = pm.r_int64(self.process, scene + 496)
         return pm.r_vec3(self.process, bone + index * 32)
 
     def WorldToScreen(self, matrix):
