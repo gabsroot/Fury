@@ -31,3 +31,7 @@ As this cheat uses an external overlay, Counter-Strike 2 must be in **"Windowed 
 ## Warning
 
 Using cheats in online games like Counter Strike 2 can result in bans or penalties from the game's developers. I am not responsible for any prohibitions, use at your own risk
+
+## Authors
+
+<a href="https://github.com/gabsroot/fury/graphs/contributors"><img src="https://contrib.rocks/image?repo=gabsroot/fury"/></a>
