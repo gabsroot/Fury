@@ -4,25 +4,25 @@ Fury is a cheat for Counter-Strike 2, developed using [PyMeow](https://github.co
 
 ## Features
 
-- **ESP (Extra Sensory Perception):** Displays information such as bone structure, bounding boxes, lines, player names, health, and armor
+- **Visual:** Displays information for enemies/friends such as bone structure, shadows, boxes, lines, player names, weapon icons, health
 
-- **TriggerBot:** Automatically fires when an enemy is in the crosshairs
+- **Aimbot:** Aligns the crosshair to the player closest to the crosshair
 
-- **HvH (Hack vs Hack):** Features for anti-aim, pitch manipulation, and jitter/spin techniques
+- **Trigger:** Automatically fires when an enemy is in the crosshairs
 
-- **Misc:** Includes functions for BunnyHop, NoFlash, and field of view (FOV) modification
+- **Misc:** Includes functions like noFlash
 
 - **Config:** Save and load configurations
 
 ## Demonstration
 
-![img](https://github.com/gabsroot/Fury/assets/101952389/a873f387-1b7f-4d07-8325-3bf8766a36e4)
+![img](https://github.com/user-attachments/assets/e6da930c-a7ce-426f-bf34-8fa659940ffd)
 
-![img](https://github.com/gabsroot/Fury/assets/101952389/1a4a8901-673f-49bc-b804-a90a2239d6dd)
+![img](https://github.com/user-attachments/assets/9040835e-83b7-40c0-adca-0d8e673ba03b)
 
 ## Usage
 
-For quick use, just [click here](https://github.com/gabsroot/fury/releases/download/1.0/loader.zip) and download the loader (password is `fury`)
+For quick use, just [click here](https://github.com/gabsroot/fury/releases/download/1.1/loader.zip) and download the loader (password is `fury`)
 
 If you prefer to run the source code, install the dependencies and run the `main.py` script
 
