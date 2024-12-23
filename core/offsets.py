@@ -4,7 +4,6 @@ import ctypes
 try:
     offset = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/offsets.json").json()
     client = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/client_dll.json").json()
-    button = get("https://raw.githubusercontent.com/a2x/cs2-dumper/main/output/buttons.json").json()
 
     dwEntityList = offset["client.dll"]["dwEntityList"]
     dwViewMatrix = offset["client.dll"]["dwViewMatrix"]
@@ -33,4 +32,4 @@ try:
     m_iItemDefinitionIndex = client["client.dll"]["classes"]["C_EconItemView"]["fields"]["m_iItemDefinitionIndex"]
     m_pBoneArray = client["client.dll"]["classes"]["CSkeletonInstance"]["fields"]["m_modelState"] + 128
 except:
-    ctypes.windll.user32.MessageBoxW(0, "An error occurred while obtaining the offsets, please wait for an update", "Error", 0x10)
+    ctypes.windll.user32.MessageBoxW(0, "Failed to get offsets, please wait for an update.", "Error", 0x10)
