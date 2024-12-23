@@ -1,36 +1,65 @@
 # Fury
 
-Fury is a cheat for Counter-Strike 2, developed using [PyMeow](https://github.com/qb-0/pyMeow)
+Fury is a cheat for Counter-Strike 2, developed using [PyMeow](https://github.com/qb-0/pyMeow).
 
 ## Features
 
-- **Visual:** Displays information for enemies/friends such as bone structure, shadows, boxes, lines, player names, weapon icons, health
+- **Aimbot**
+  - Only Visible
+  - Key
+  - Fov
+  - Smooth
 
-- **Aimbot:** Aligns the crosshair to the player closest to the crosshair
+- **Trigger**
+  - Target Chicken
+  - Key
+  - Delay
+ 
+- **Visual**
+  - Bone
+  - Line
+  - Box (normal, corner)
+  - Name
+  - Weapon
+  - Health
+  - Armor
+  - Crosshair
 
-- **Trigger:** Automatically fires when an enemy is in the crosshairs
+## Preview
 
-- **Misc:** Includes functions like noFlash
+![img](https://github.com/user-attachments/assets/8b0df825-ff73-4ed6-ac06-bf7ca204822b)
 
-- **Config:** Save and load configurations
+![img](https://github.com/user-attachments/assets/889a0f8b-b49c-4905-b041-2ffc994f6706)
 
-## Demonstration
+## Download
 
-![img](https://github.com/user-attachments/assets/e6da930c-a7ce-426f-bf34-8fa659940ffd)
+[Click here](https://github.com/gabsroot/fury/releases/download/1.2/loader.zip) to download the loader (Password is `123`).
 
-![img](https://github.com/user-attachments/assets/9040835e-83b7-40c0-adca-0d8e673ba03b)
+## Run the Source Code
 
-## Usage
+If you prefer to run the source code, follow these steps:
 
-For quick use, just [click here](https://github.com/gabsroot/fury/releases/download/1.1/loader.zip) and download the loader (password is `fury`)
+1. Install the required dependencies.
+2. Run the application with:
+ ```bash
+ python main.py
+```
 
-If you prefer to run the source code, install the dependencies and run the `main.py` script
+Or build with [PyInstaller](https://pyinstaller.org/en/stable/):
 
-As this cheat uses an external overlay, Counter-Strike 2 must be in **"Windowed Mode"** or **"Full Screen Windowed Mode"**
+```bash
+pyinstaller --onefile --windowed --uac-admin --i="NONE" main.py
+```
 
-## Warning
+<br>
 
-Using cheats in online games like Counter Strike 2 can result in bans or penalties from the game's developers. I am not responsible for any prohibitions, use at your own risk
+>[!NOTE]
+This cheat uses an external overlay. Therefore, Counter-Strike 2 must be in **"Fullscreen Windowed Mode"**.
+
+<br>
+
+>[!IMPORTANT]
+Using cheats in online games like Counter Strike 2 can result in bans or penalties from the game's developers. I am not responsible for any prohibitions, use at your own risk.
 
 ## Authors
 
