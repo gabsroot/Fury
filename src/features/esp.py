@@ -1,8 +1,8 @@
 import pyMeow as pm
-from config import *
+from ui.config import *
 from core.offsets import *
 from core.utils import *
-from cheat.features.entity import *
+from features.entity import *
 
 class ESP:
     def __init__(self, process, module):
@@ -15,42 +15,54 @@ class ESP:
             view_matrix = pm.r_floats(self.process, self.module + dwViewMatrix, 16)
             local_player_controller = pm.r_int64(self.process, self.module + dwLocalPlayerController)
             local_player_team = pm.r_int(self.process, local_player_controller + m_iTeamNum)
-
+            
             # crosshair
-            if Config.crosshair["enable"]:
-                pm.draw_circle_lines(
-                    centerX=pm.get_screen_width() / 2,
-                    centerY=pm.get_screen_height() / 2,
-                    radius=3,
-                    color=pm.fade_color(Config.crosshair["color"], 0.7)
+            if Switch.queue.get("crosshair"):
+                # x
+                pm.draw_line(
+                    startPosX=pm.get_screen_width() / 2 - 5,
+                    startPosY=pm.get_screen_height() / 2,
+                    endPosX=pm.get_screen_width() / 2 + 5,
+                    endPosY=pm.get_screen_height() / 2,
+                    color=pm.fade_color(ColorPicker.queue.get("crosshair").get("color"), 0.7),
+                    thick=1.7
                 )
 
+                # y
+                pm.draw_line(
+                    startPosX=pm.get_screen_width() / 2,
+                    startPosY=pm.get_screen_height() / 2 - 5,
+                    endPosX=pm.get_screen_width() / 2,
+                    endPosY=pm.get_screen_height() / 2 + 5,
+                    color=pm.fade_color(ColorPicker.queue.get("crosshair").get("color"), 0.7),
+                    thick=1.7
+                )
+            
             # fov
-            if Config.aimbot["draw_fov"] and Config.aimbot["enable"]:
+            if Switch.queue.get("draw_fov") and Switch.queue.get("aimbot_enable"):
                 pm.draw_circle_lines(
                     centerX=pm.get_screen_width() / 2,
                     centerY=pm.get_screen_height() / 2,
-                    radius=Config.aimbot["fov"],
-                    color=pm.fade_color(pm.get_color("#ffffff"), 0.5)
+                    radius=Slider.queue.get("fov"),
+                    color=pm.fade_color(ColorPicker.queue["fov"]["color"], 0.5)
                 )
                 
             for entity in self.entities.enumerate():
-                
                 if entity.world_to_screen(view_matrix) and entity.health() != 0:
-                    
                     box_x = entity.head_pos_2d["x"] - (((entity.pos_2d["y"] - entity.head_pos_2d["y"]) / 2) / 2)
                     box_y = entity.head_pos_2d["y"] - (((entity.pos_2d["y"] - entity.head_pos_2d["y"]) / 2) / 2) / 2
                     box_width = (entity.pos_2d["y"] - entity.head_pos_2d["y"]) / 2
                     box_height = (entity.pos_2d["y"] - entity.head_pos_2d["y"]) + (((entity.pos_2d["y"] - entity.head_pos_2d["y"]) / 2) / 2) / 2
                     corner_length = min(box_width, box_height) * 0.2
-                    name = Utils.normalize_name(entity.name())
+                    name = Utils.clean_text(entity.name())
 
                     # enemy
                     if entity.team() != local_player_team:
-                        
+
                         # bone
-                        if Config.esp["enemy"]["bone"]["enable"]:
-                            [pm.draw_line(startPosX=bone[0], startPosY=bone[1], endPosX=bone[2], endPosY=bone[3], color=pm.fade_color(Config.esp["enemy"]["bone"]["color"], 0.5), thick=Config.esp["enemy"]["bone"]["thick"]) for bone in [
+                        if Switch.queue.get("enemy_bone"):
+
+                            [pm.draw_line(startPosX=bone[0], startPosY=bone[1], endPosX=bone[2], endPosY=bone[3], color=pm.fade_color(ColorPicker.queue["enemy_bone"]["color"], 0.7), thick=1.5) for bone in [
                                 (entity.neck["x"], entity.neck["y"], entity.right_shoulder["x"], entity.right_shoulder["y"]),
                                 (entity.neck["x"], entity.neck["y"], entity.left_shoulder["x"], entity.left_shoulder["y"]),
                                 (entity.left_arm["x"], entity.left_arm["y"], entity.left_shoulder["x"], entity.left_shoulder["y"]),
@@ -64,23 +76,15 @@ class ESP:
                                 (entity.right_knees["x"], entity.right_knees["y"], entity.right_feet["x"], entity.right_feet["y"])
                             ]]
 
-                        # line
-                        if Config.esp["enemy"]["line"]["enable"]:
-                            pm.draw_line(
-                                startPosX=pm.get_screen_width() / 2,
-                                startPosY=pm.get_screen_height() - 100,
-                                endPosX=entity.pos_2d["x"],
-                                endPosY=entity.pos_2d["y"],
-                                color=pm.fade_color(Config.esp["enemy"]["line"]["color"], 0.5),
-                                thick=Config.esp["enemy"]["line"]["thick"]
-                            )
 
                         # box
-                        if Config.esp["enemy"]["box"]["enable"]:
-                            box_color = pm.fade_color(Config.esp["enemy"]["box"]["color"], 0.5)
+                        if Switch.queue.get("enemy_box"):
 
-                            # normal
-                            if Config.esp["enemy"]["box"]["style"] == "normal":
+                            box_color = pm.fade_color(ColorPicker.queue["enemy_box"]["color"], 0.7)
+
+                            if Combo.queue["enemy_box_style"] == "normal":
+
+                                # normal
                                 pm.draw_rectangle_rounded_lines(
                                     posX=box_x,
                                     posY=box_y,
@@ -94,47 +98,64 @@ class ESP:
                             
                             else:
                                 # corner
-                                pm.draw_line(box_x, box_y, box_x + corner_length, box_y, box_color, 1.2)
-                                pm.draw_line(box_x, box_y, box_x, box_y + corner_length, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y, box_x + box_width - corner_length, box_y, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y, box_x + box_width, box_y + corner_length, box_color, 1.2)
-                                pm.draw_line(box_x, box_y + box_height, box_x + corner_length, box_y + box_height, box_color, 1.2)
-                                pm.draw_line(box_x, box_y + box_height, box_x, box_y + box_height - corner_length, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y + box_height, box_x + box_width - corner_length, box_y + box_height, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y + box_height, box_x + box_width, box_y + box_height - corner_length, box_color, 1.2)
+                                [pm.draw_line(startPosX=line[0], startPosY=line[1], endPosX=line[2], endPosY=line[3], color=box_color, thick=1.2) for line in [
+                                    (box_x, box_y, box_x + corner_length, box_y),
+                                    (box_x, box_y, box_x, box_y + corner_length),
+                                    (box_x + box_width, box_y, box_x + box_width - corner_length, box_y),
+                                    (box_x + box_width, box_y, box_x + box_width, box_y + corner_length),
+                                    (box_x, box_y + box_height, box_x + corner_length, box_y + box_height),
+                                    (box_x, box_y + box_height, box_x, box_y + box_height - corner_length),
+                                    (box_x + box_width, box_y + box_height, box_x + box_width - corner_length, box_y + box_height),
+                                    (box_x + box_width, box_y + box_height, box_x + box_width, box_y + box_height - corner_length)
+                                ]]
+
+                        # line
+                        if Switch.queue.get("enemy_line"):
+
+                            pm.draw_line(
+                                startPosX=pm.get_screen_width() / 2,
+                                startPosY=pm.get_screen_height() - 100,
+                                endPosX=entity.pos_2d["x"],
+                                endPosY=entity.pos_2d["y"],
+                                color=pm.fade_color(ColorPicker.queue["enemy_line"]["color"], 0.7),
+                                thick=0.5
+                            )
 
                         # name
-                        if Config.esp["enemy"]["name"]["enable"]:
+                        if Switch.queue.get("enemy_name"):
+
                             pm.draw_font(
                                 fontId=1,
                                 text=name,
-                                posX=entity.head_pos_2d["x"] - ((len(name) * 5) / 2),
+                                posX=entity.head_pos_2d["x"] - (pm.measure_text(text=name, fontSize=12) / 2),
                                 posY=entity.head_pos_2d["y"] + box_height + 5,
                                 fontSize=12,
                                 spacing=0,
-                                tint=pm.fade_color(Config.esp["enemy"]["name"]["color"], 0.7)
+                                tint=pm.fade_color(ColorPicker.queue["enemy_name"]["color"], 0.7)
                             )
 
                         # weapon
-                        if Config.esp["enemy"]["weapon"]["enable"]:
+                        if Switch.queue.get("enemy_weapon"):
+
                             pm.draw_font(
-                                fontId=2,
+                                fontId=3,
                                 text=entity.weapon(),
                                 posX=entity.head_pos_2d["x"] - 10,
                                 posY=entity.head_pos_2d["y"] + box_height + 20,
                                 fontSize=10,
                                 spacing=0.0,
-                                tint=pm.fade_color(Config.esp["enemy"]["weapon"]["color"], 0.5)
+                                tint=pm.fade_color(ColorPicker.queue["enemy_weapon"]["color"], 0.7)
                             )
 
                         # health
-                        if Config.esp["enemy"]["health"]["enable"]:
+                        if Switch.queue.get("enemy_health"):
+
                             pm.draw_rectangle(
                                 posX=box_x - 8,
                                 posY=box_y,
                                 width=2,
                                 height=box_height,
-                                color=pm.fade_color(pm.get_color("#db4a56"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["enemy_health"]["color"], 0.7)
                             )
 
                             pm.draw_rectangle(
@@ -142,17 +163,18 @@ class ESP:
                                 posY=box_y + (box_height * (100 - entity.health()) / 100),
                                 width=2,
                                 height=box_height * (entity.health() / 100),
-                                color=pm.fade_color(pm.get_color("#41e295"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["enemy_health_fill"]["color"], 0.7)
                             )
 
                         # armor
-                        if Config.esp["enemy"]["armor"]["enable"]:
+                        if Switch.queue.get("enemy_armor"):
+
                             pm.draw_rectangle(
                                 posX=entity.head_pos_2d["x"] - (box_width / 2),
                                 posY=box_y - 10,
                                 width=box_width,
                                 height=2,
-                                color=pm.fade_color(pm.get_color("#db4a56"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["enemy_armor_fill"]["color"], 0.7)
                             )
 
                             pm.draw_rectangle(
@@ -160,15 +182,15 @@ class ESP:
                                 posY=box_y - 10,
                                 width=box_width * (entity.armor() / 100),
                                 height=2,
-                                color=pm.fade_color(pm.get_color("#32ace5"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["enemy_armor"]["color"], 0.7)
                             )
 
-                    else:
+                    else: 
                         # friend
-
                         # bone
-                        if Config.esp["friend"]["bone"]["enable"]:
-                            [pm.draw_line(startPosX=bone[0], startPosY=bone[1], endPosX=bone[2], endPosY=bone[3], color=pm.fade_color(Config.esp["friend"]["bone"]["color"], 0.5), thick=Config.esp["friend"]["bone"]["thick"]) for bone in [
+                        if Switch.queue.get("friend_bone"):
+                            
+                            [pm.draw_line(startPosX=bone[0], startPosY=bone[1], endPosX=bone[2], endPosY=bone[3], color=pm.fade_color(ColorPicker.queue["friend_bone"]["color"], 0.7), thick=1.5) for bone in [
                                 (entity.neck["x"], entity.neck["y"], entity.right_shoulder["x"], entity.right_shoulder["y"]),
                                 (entity.neck["x"], entity.neck["y"], entity.left_shoulder["x"], entity.left_shoulder["y"]),
                                 (entity.left_arm["x"], entity.left_arm["y"], entity.left_shoulder["x"], entity.left_shoulder["y"]),
@@ -182,23 +204,13 @@ class ESP:
                                 (entity.right_knees["x"], entity.right_knees["y"], entity.right_feet["x"], entity.right_feet["y"])
                             ]]
 
-                        # line
-                        if Config.esp["friend"]["line"]["enable"]:
-                            pm.draw_line(
-                                startPosX=pm.get_screen_width() / 2,
-                                startPosY=pm.get_screen_height() - 100,
-                                endPosX=entity.pos_2d["x"],
-                                endPosY=entity.pos_2d["y"],
-                                color=pm.fade_color(Config.esp["friend"]["line"]["color"], 0.5),
-                                thick=Config.esp["friend"]["line"]["thick"]
-                            )
-
                         # box
-                        if Config.esp["friend"]["box"]["enable"]:
-                            box_color = pm.fade_color(Config.esp["friend"]["box"]["color"], 0.5)
+                        if Switch.queue.get("friend_box"):
 
-                            # normal
-                            if Config.esp["friend"]["box"]["style"] == "normal":
+                            box_color = pm.fade_color(ColorPicker.queue["friend_box"]["color"], 0.7)
+
+                            if Combo.queue["friend_box_style"] == "normal":
+                                # normal
                                 pm.draw_rectangle_rounded_lines(
                                     posX=box_x,
                                     posY=box_y,
@@ -212,47 +224,64 @@ class ESP:
                             
                             else:
                                 # corner
-                                pm.draw_line(box_x, box_y, box_x + corner_length, box_y, box_color, 1.2)
-                                pm.draw_line(box_x, box_y, box_x, box_y + corner_length, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y, box_x + box_width - corner_length, box_y, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y, box_x + box_width, box_y + corner_length, box_color, 1.2)
-                                pm.draw_line(box_x, box_y + box_height, box_x + corner_length, box_y + box_height, box_color, 1.2)
-                                pm.draw_line(box_x, box_y + box_height, box_x, box_y + box_height - corner_length, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y + box_height, box_x + box_width - corner_length, box_y + box_height, box_color, 1.2)
-                                pm.draw_line(box_x + box_width, box_y + box_height, box_x + box_width, box_y + box_height - corner_length, box_color, 1.2)
+                                [pm.draw_line(startPosX=line[0], startPosY=line[1], endPosX=line[2], endPosY=line[3], color=box_color, thick=1.2) for line in [
+                                    (box_x, box_y, box_x + corner_length, box_y),
+                                    (box_x, box_y, box_x, box_y + corner_length),
+                                    (box_x + box_width, box_y, box_x + box_width - corner_length, box_y),
+                                    (box_x + box_width, box_y, box_x + box_width, box_y + corner_length),
+                                    (box_x, box_y + box_height, box_x + corner_length, box_y + box_height),
+                                    (box_x, box_y + box_height, box_x, box_y + box_height - corner_length),
+                                    (box_x + box_width, box_y + box_height, box_x + box_width - corner_length, box_y + box_height),
+                                    (box_x + box_width, box_y + box_height, box_x + box_width, box_y + box_height - corner_length)
+                                ]]
+
+                        # line
+                        if Switch.queue.get("friend_line"):
+
+                            pm.draw_line(
+                                startPosX=pm.get_screen_width() / 2,
+                                startPosY=pm.get_screen_height() - 100,
+                                endPosX=entity.pos_2d["x"],
+                                endPosY=entity.pos_2d["y"],
+                                color=pm.fade_color(ColorPicker.queue["friend_line"]["color"], 0.7),
+                                thick=0.5
+                            )
 
                         # name
-                        if Config.esp["friend"]["name"]["enable"]:
+                        if Switch.queue.get("friend_name"):
+
                             pm.draw_font(
                                 fontId=1,
                                 text=name,
-                                posX=entity.head_pos_2d["x"] - ((len(name) * 5) / 2),
+                                posX=entity.head_pos_2d["x"] - (pm.measure_text(text=name, fontSize=12) / 2),
                                 posY=entity.head_pos_2d["y"] + box_height + 5,
                                 fontSize=12,
                                 spacing=0,
-                                tint=pm.fade_color(Config.esp["friend"]["name"]["color"], 0.7)
+                                tint=pm.fade_color(ColorPicker.queue["friend_name"]["color"], 0.7)
                             )
 
                         # weapon
-                        if Config.esp["friend"]["weapon"]["enable"]:
+                        if Switch.queue.get("friend_weapon"):
+
                             pm.draw_font(
-                                fontId=2,
+                                fontId=3,
                                 text=entity.weapon(),
                                 posX=entity.head_pos_2d["x"] - 10,
                                 posY=entity.head_pos_2d["y"] + box_height + 20,
                                 fontSize=10,
                                 spacing=0.0,
-                                tint=pm.fade_color(Config.esp["friend"]["weapon"]["color"], 0.5)
+                                tint=pm.fade_color(ColorPicker.queue["friend_weapon"]["color"], 0.7)
                             )
 
                         # health
-                        if Config.esp["friend"]["health"]["enable"]:
+                        if Switch.queue.get("friend_health"):
+
                             pm.draw_rectangle(
                                 posX=box_x - 8,
                                 posY=box_y,
                                 width=2,
                                 height=box_height,
-                                color=pm.fade_color(pm.get_color("#db4a56"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["friend_health"]["color"], 0.7)
                             )
 
                             pm.draw_rectangle(
@@ -260,17 +289,18 @@ class ESP:
                                 posY=box_y + (box_height * (100 - entity.health()) / 100),
                                 width=2,
                                 height=box_height * (entity.health() / 100),
-                                color=pm.fade_color(pm.get_color("#41e295"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["friend_health_fill"]["color"], 0.7)
                             )
 
                         # armor
-                        if Config.esp["friend"]["armor"]["enable"]:
+                        if Switch.queue.get("friend_armor"):
+
                             pm.draw_rectangle(
                                 posX=entity.head_pos_2d["x"] - (box_width / 2),
                                 posY=box_y - 10,
                                 width=box_width,
                                 height=2,
-                                color=pm.fade_color(pm.get_color("#db4a56"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["friend_armor_fill"]["color"], 0.7)
                             )
 
                             pm.draw_rectangle(
@@ -278,7 +308,8 @@ class ESP:
                                 posY=box_y - 10,
                                 width=box_width * (entity.armor() / 100),
                                 height=2,
-                                color=pm.fade_color(pm.get_color("#32ace5"), 0.5)
+                                color=pm.fade_color(ColorPicker.queue["friend_armor"]["color"], 0.7)
                             )
         except:
             pass
+

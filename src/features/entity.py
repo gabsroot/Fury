@@ -28,15 +28,15 @@ class Entity:
 
         index = pm.r_int16(self.process, current + m_AttributeManager + m_Item + m_iItemDefinitionIndex)
         return Utils.weapon_icon(index)
-    
+
     def spotted(self):
         return pm.r_bool(self.process, self.entity_pawn + m_entitySpottedState + m_bSpotted)
     
-    def ping(self):
-        return pm.r_int(self.process, self.entity_controller + m_iPing)
+    # def ping(self):
+    #     return pm.r_int(self.process, self.entity_controller + m_iPing)
     
-    def score(self):
-        return pm.r_int(self.process, self.entity_controller + m_iScore)
+    # def score(self):
+    #     return pm.r_int(self.process, self.entity_controller + m_iScore)
     
     def pos(self):
         return pm.r_vec3(self.process, self.entity_pawn + m_vOldOrigin)
