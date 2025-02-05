@@ -12,6 +12,8 @@ Fury is an external cheat for Counter-Strike 2, developed using python.
 
 [Click here](https://furycheat.vercel.app/) to download the loader.
 
+The key to open the menu is `INSERT`
+
 ## Preview
 
 ![img](https://github.com/user-attachments/assets/81b4e500-cc72-4b7d-918c-8546c4c23344)
