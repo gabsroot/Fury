@@ -1,6 +1,6 @@
 # Fury
 
-Fury is an external cheat for Counter-Strike 2, developed using [PyMeow](https://github.com/qb-0/pyMeow).
+Fury is an external cheat for Counter-Strike 2, developed using python.
 
 **Features**
   - Aimbot
@@ -10,11 +10,11 @@ Fury is an external cheat for Counter-Strike 2, developed using [PyMeow](https:/
 
 ## Download
 
-[Click here](https://github.com/gabsroot/fury/releases/download/1.2/loader.zip) to download the loader (Password is `123`).
+[Click here](https://furycheat.vercel.app/) to download the loader.
 
 ## Preview
 
-![img](https://github.com/user-attachments/assets/8b0df825-ff73-4ed6-ac06-bf7ca204822b)
+![img](https://github.com/user-attachments/assets/81b4e500-cc72-4b7d-918c-8546c4c23344)
 
 ## Run the Source Code
 
@@ -29,7 +29,7 @@ If you prefer to run the source code, follow these steps:
 Or build with [PyInstaller](https://pyinstaller.org/en/stable/):
 
 ```bash
-pyinstaller --onefile --windowed --uac-admin --i="NONE" main.py
+./build.bat
 ```
 
 <br>
@@ -43,9 +43,8 @@ This cheat uses an external overlay. Therefore, Counter-Strike 2 must be in **"F
 Using cheats in online games like Counter Strike 2 can result in bans or penalties from the game's developers. I am not responsible for any prohibitions, use at your own risk.
 
 ## Credits
-  - [PyMeow](https://github.com/qb-0/pyMeow)
-  - [DearPyGui](https://github.com/hoffstadt/DearPyGui)
-  - [A2X-Dumper](https://github.com/a2x/cs2-dumper)
+  - [pyMeow](https://github.com/qb-0/pyMeow)
+  - [cs2-dumper](https://github.com/a2x/cs2-dumper)
   
 ## Authors
 
