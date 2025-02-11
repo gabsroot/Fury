@@ -1,0 +1,2 @@
+requests
+https://github.com/qb-0/pyMeow/releases/download/1.73.42/pyMeow-1.73.42.zip
