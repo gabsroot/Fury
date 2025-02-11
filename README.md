@@ -10,7 +10,7 @@ Fury is an external cheat for Counter-Strike 2, developed using python.
 
 ## Download
 
-[Click here](https://github.com/gabsroot/fury/releases/download/1.3/loader.zip) to download the loader.
+[Click here](https://github.com/gabsroot/fury/releases/download/1.3/loader.zip) to download the loader (password is `123`).
 
 The key to open the menu is `INSERT`
 
