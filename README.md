@@ -10,9 +10,17 @@ Fury is an external cheat for Counter-Strike 2, developed using python.
 
 ## Download
 
-[Click here](https://github.com/gabsroot/fury/releases/download/1.3/loader.zip) to download the loader (password is `123`).
+[Click here](https://github.com/gabsroot/fury/releases/download/1.4/loader.zip) to download the loader (password is `123`).
 
 The key to open the menu is `INSERT`
+
+<br>
+
+> [!IMPORTANT]
+> This cheat uses an external overlay. Counter-Strike 2 must be in **Fullscreen Windowed**.
+
+> [!CAUTION]
+> This project is for educational purposes only. Its use in online matches is prohibited.
 
 ## Preview
 
@@ -39,16 +47,6 @@ Or build an executable using [PyInstaller](https://pyinstaller.org/en/stable):
 ```bash
 ./build.bat
 ```
-
-<br>
-
->[!IMPORTANT]
-This cheat uses an external overlay. Counter-Strike 2 must be in **Fullscreen Windowed**.
-
-<br>
-
->[!WARNING]
-Using cheats in online games may result in your account being banned. **I am not responsible for any misuse**.
 
 ## Credits
   - [pyMeow](https://github.com/qb-0/pyMeow)
