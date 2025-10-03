@@ -31,7 +31,7 @@ class Control:
     def drag_menu():
 
         if pm.mouse_pressed() and Menu.show:
-            
+
             if not Menu.dragging and Menu.x <= Mouse.x <= Menu.x + 510 and Menu.y <= Mouse.y <= Menu.y + 50:
                 Menu.dragging = True
                 Menu.offset_x = Mouse.x - Menu.x

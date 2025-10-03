@@ -7,11 +7,14 @@ class Trigger:
     def __init__(self, process, module):
         self.process = process
         self.module = module
-        self.mapping = {"shift": 0x10, "ctrl": 0x11}
+        self.keys = {"shift": 0x10, "ctrl": 0x11}
 
     def update(self):
 
-        if not Switch.queue.get("trigger_enable") or (Combo.queue.get("trigger_keybind") != "none" and not ctypes.windll.user32.GetAsyncKeyState(self.mapping.get(Combo.queue.get("trigger_keybind")))):
+        if not Switch.queue.get("trigger_enable"):
+            return
+
+        if (key := Combo.queue.get("trigger_keybind")) != "none" and (vk := self.keys.get(key)) is not None and not pm.key_pressed(vKey=vk):
             return
 
         try:

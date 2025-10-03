@@ -1,5 +1,4 @@
-import pyMeow as pm
-import math, ctypes
+import pyMeow as pm, math, ctypes
 from ui.config import *
 from core.offsets import *
 from features.entity import *
@@ -8,64 +7,76 @@ class Aimbot:
     def __init__(self, process, module):
         self.process = process
         self.module = module
-        self.entities = Entities(self.process, self.module)
-        self.mapping = {"shift": 0x10, "ctrl": 0x11, "mouse1": 0x01}
+        self.entities = Entities(process, module)
+        self.sw = pm.get_screen_width()
+        self.sh = pm.get_screen_height()
+        self.keys = {"shift": 0x10, "ctrl": 0x11, "mouse1": 0x01}
 
     def update(self):
-
-        if not Switch.queue.get("aimbot_enable") or (Combo.queue.get("aimbot_keybind") != "none" and not ctypes.windll.user32.GetAsyncKeyState(self.mapping.get(Combo.queue.get("aimbot_keybind")))):
+        if not Switch.queue.get("aimbot_enable"):
             return
 
-        try:
-            entity_pos = None
-            fov = Slider.queue.get("fov") / 10
-            smooth = Slider.queue.get("smooth")
+        if (key := Combo.queue.get("aimbot_keybind")) != "none" and (vk := self.keys.get(key)) is not None and not pm.key_pressed(vKey=vk):
+            return
 
-            local_player_pawn = pm.r_int64(self.process, self.module + dwLocalPlayerPawn)
-            local_player_controller = pm.r_int64(self.process, self.module + dwLocalPlayerController)
-            local_player_team = pm.r_int(self.process, local_player_controller + m_iTeamNum)
-            local_player_pos = pm.r_vec3(self.process, local_player_pawn + m_vOldOrigin)
-            view_angles = pm.r_vec3(self.process, self.module + dwViewAngles)
+        local_pawn = pm.r_int64(self.process, self.module + dwLocalPlayerPawn)
+        
+        if not local_pawn:
+            return
 
-            for entity in self.entities.enumerate():
-                try:
-                    if entity.spotted() or not Switch.queue.get("only_spotted"):
-                        if entity.health() != 0 and entity.team() != local_player_team or Switch.queue.get("ignore_team"):
-                            angles = self.calc_angle(local_player_pos, entity.pos())
-                            closest = self.get_fov(view_angles, angles)
+        local_controller = pm.r_int64(self.process, self.module + dwLocalPlayerController)
+        local_team = pm.r_int(self.process, local_controller + m_iTeamNum)
 
-                            if closest < fov:
-                                fov = closest
-                                entity_pos = entity.pos()
-                except:
+        best_pos = None
+        best_fov = float(Slider.queue.get("fov") or 50) / 5.0
+        smooth = max(1.0, float(Slider.queue.get("smooth") or 5))
+
+        for entity in self.entities.enumerate():
+            try:
+                if not entity.health() or entity.health() <= 0:
                     continue
 
-            if entity_pos is not None:
-                angles = self.calc_angle(local_player_pos, entity_pos)
-                punch_y = pm.r_float(self.process, local_player_pawn + m_aimPunchAngle + 4)
-                angles["x"] -= punch_y * 2
+                if entity.team() == local_team and not Switch.queue.get("ignore_team"):
+                    continue
 
-                if smooth > 0:
-                    angles["x"] = view_angles["x"] + (angles["x"] - view_angles["x"]) / smooth
-                    angles["y"] = view_angles["y"] + (angles["y"] - view_angles["y"]) / smooth
-                else:
-                    angles["y"] -= punch_y * 2
+                if not entity.spotted() and Switch.queue.get("only_spotted"):
+                    continue
 
-                pm.w_vec3(self.process, self.module + dwViewAngles, angles)
-        except:
-            pass
+                pos = entity.bone_pos(6) # head = 6
+                fov = self.get_fov(pos)
 
-    def calc_angle(self, local, entity):
-        delta = {"x": entity["x"] - local["x"], "y": entity["y"] - local["y"], "z": entity["z"] - local["z"]}
-        yaw = math.degrees(math.atan2(delta["y"], delta["x"]))
-        hyp = math.sqrt(delta["x"] ** 2 + delta["y"] ** 2)
-        pitch = -math.degrees(math.atan2(delta["z"], hyp))
-        
-        return {"x": pitch, "y": yaw}
+                if fov < best_fov:
+                    best_fov = fov
+                    best_pos = pos
+            except:
+                continue
 
-    def get_distance(self, local, entity):
-        return math.sqrt((local["x"] - entity["x"]) ** 2 + (local["y"] - entity["y"]) ** 2 + (local["z"] - entity["z"]) ** 2)
+        if not best_pos:
+            return
 
-    def get_fov(self, view_angles, target):
-        delta = {"x": target["x"] - view_angles["x"], "y": target["y"] - view_angles["y"]}
-        return math.sqrt(delta["x"] ** 2 + delta["y"] ** 2)
+        view = pm.r_floats(self.process, self.module + dwViewMatrix, 16)
+        screen = pm.world_to_screen(view, best_pos, 1)
+
+        if not screen:
+            return
+
+        dx = screen["x"] - self.sw / 2
+        dy = screen["y"] - self.sh / 2
+        mx = int(dx / smooth)
+        my = int(dy / smooth)
+
+        if abs(mx) > 1 or abs(my) > 1:
+            ctypes.windll.user32.mouse_event(0x0001, mx, my, 0, 0)
+            # pm.mouse_move(x=mx, y=my, relative=False)
+            
+    def get_fov(self, pos):
+        view = pm.r_floats(self.process, self.module + dwViewMatrix, 16)
+        screen = pm.world_to_screen(view, pos, 1)
+
+        if not screen:
+            return 999.0
+
+        dx = screen["x"] - self.sw / 2
+        dy = screen["y"] - self.sh / 2
+
+        return math.hypot(dx, dy) / 5

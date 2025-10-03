@@ -32,12 +32,6 @@ class Entity:
     def spotted(self):
         return pm.r_bool(self.process, self.entity_pawn + m_entitySpottedState + m_bSpotted)
     
-    # def ping(self):
-    #     return pm.r_int(self.process, self.entity_controller + m_iPing)
-    
-    # def score(self):
-    #     return pm.r_int(self.process, self.entity_controller + m_iScore)
-    
     def pos(self):
         return pm.r_vec3(self.process, self.entity_pawn + m_vOldOrigin)
     
@@ -79,7 +73,6 @@ class Entities:
         for entity in range(1, 65):
             try:
                 entity_list = pm.r_int64(self.process, self.module + dwEntityList)
-
                 entity_entry = pm.r_int64(self.process, entity_list + (8 * (entity & 0x7FFF) >> 9) + 16)
                 entity_controller = pm.r_int64(self.process, entity_entry + 120 * (entity & 0x1FF))
 

@@ -399,3 +399,4 @@ class Components:
         }
 
         Notification.queue.append(notification)
+        
